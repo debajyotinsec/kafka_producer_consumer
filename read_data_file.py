@@ -1,12 +1,21 @@
 
 from print_data import *
 from database_query_exec import *
+from data_transformation import *
 from psycopg2.extras import Json
 from datetime import datetime
 
 def read_file(input_file_path, connection_id_pg):
     count = 0
     with open(input_file_path, 'r') as inp_file:
+
+        # for each_line in inp_file:
+        #     print ("---->{}<------".format(each_line))
+        #     print_pos(each_line)
+        #     count = count + 1
+        # print ("{} ----> Lines read")
+        # exit()
+
         for each_line in inp_file:
             count = count + 1
             PURCHASE_ORDER_NUMBER, DIVISION_CODE_CR_D, PO_APPROVAL_IND_D, PO_APPROVAL_DATE_D, \
@@ -43,7 +52,8 @@ def read_file(input_file_path, connection_id_pg):
             PRIM_TARG_PROD_DTE, SEC_TARG_PROD_DTE, ORIG_TRANS_DT, ORIG_TRANS_TI, \
             PO_RTRANS_IND, FILLER_42X_1 = each_line.split('~')
             
-
+            if PURCHASE_ORDER_NUMBER in PURCHASE_ORDER_NUMBER_SKIP_LIST:
+                continue
         
             # if count > 5:
             #     break
@@ -135,6 +145,7 @@ def read_file(input_file_path, connection_id_pg):
             #     ITEM_NUM_STAT_IND_INFO_END_POS = ITEM_NUM_STAT_IND_INFO_START_POS + ITEM_NUM_STAT_IND_INFO_LEN
             #     data_part = ITEM_NUM_STAT_IND_INFO[ITEM_NUM_STAT_IND_INFO_START_POS:ITEM_NUM_STAT_IND_INFO_END_POS]
             #     ITEM_NUMBER_STATUS_IND = data_part[0:1]
+            #     ITEM_NUMBER_STATUS_IND = transform_hex_null(ITEM_NUMBER_STATUS_IND)
             #     key = 'item_num_stat_ind_info_' + str(x+1)
             #     data_dict = dict()
             #     data_dict['ITEM_NUMBER_STATUS_IND'] = ITEM_NUMBER_STATUS_IND
@@ -164,52 +175,33 @@ def read_file(input_file_path, connection_id_pg):
 
             CURRENT_TIMESTAMP = str(datetime.now())
             # CURRENT_TIMESTAMP = '2024-10-10'
-            print ("str-------->{}".format(CURRENT_TIMESTAMP))
+            # print ("str-------->{}".format(CURRENT_TIMESTAMP))
 
-            if len(PO_APPROVAL_DATE_D.strip()) == 0:
-                PO_APPROVAL_DATE_D = '0001-01-01'
-            if len(PO_APPROVAL_DATE_R.strip()) == 0:
-                PO_APPROVAL_DATE_R = '0001-01-01'
-            if len(PO_APPROVAL_DATE_M.strip()) == 0:
-                PO_APPROVAL_DATE_M = '0001-01-01'
-            if len(PO_APPROVAL_DATE_F.strip()) == 0:
-                PO_APPROVAL_DATE_F = '0001-01-01'
-            if len(PO_MODIFIED_DATE_D.strip()) == 0:
-                PO_MODIFIED_DATE_D = '0001-01-01'
-            if len(PO_MODIFIED_DATE_R.strip()) == 0:
-                PO_MODIFIED_DATE_R = '0001-01-01'
-            if len(PO_MODIFIED_DATE_M.strip()) == 0:
-                PO_MODIFIED_DATE_M = '0001-01-01'
-            if len(PO_MODIFIED_DATE_F.strip()) == 0:
-                PO_MODIFIED_DATE_F = '0001-01-01'
-            if len(PO_CANCELLED_DATE_D.strip()) == 0:
-                PO_CANCELLED_DATE_D = '0001-01-01'
-            if len(PO_CANCELLED_DATE_R.strip()) == 0:
-                PO_CANCELLED_DATE_R = '0001-01-01'
-            if len(PO_CANCELLED_DATE_M.strip()) == 0:
-                PO_CANCELLED_DATE_M = '0001-01-01'
-            if len(PO_CANCELLED_DATE_F.strip()) == 0:
-                PO_CANCELLED_DATE_F = '0001-01-01'
-            if len(PO_ORDER_DATE.strip()) == 0:
-                PO_ORDER_DATE = '0001-01-01'
-            if len(PO_DELIVER_BY_DATE.strip()) == 0:
-                PO_DELIVER_BY_DATE = '0001-01-01'
-            if len(DELIVER_DATE_YYMMDD_KEY.strip()) == 0:
-                DELIVER_DATE_YYMMDD_KEY = '0001-01-01'
-            if len(FON_LAST_UPDATE_DATE.strip()) == 0:
-                FON_LAST_UPDATE_DATE = '0001-01-01'
-            if len(TRANSMITTED_DATE.strip()) == 0:
-                TRANSMITTED_DATE = '0001-01-01'
-            if len(PO_DISPOSAL_DATE.strip()) == 0:
-                PO_DISPOSAL_DATE = '0001-01-01'
-            if len(USE_CODE_MODIFY_DATE.strip()) == 0:
-                USE_CODE_MODIFY_DATE = '0001-01-01'
-            if len(PRIM_TARG_PROD_DTE.strip()) == 0:
-                PRIM_TARG_PROD_DTE = '0001-01-01'
-            if len(SEC_TARG_PROD_DTE.strip()) == 0:
-                SEC_TARG_PROD_DTE = '0001-01-01'
-            if len(ORIG_TRANS_DT.strip()) == 0:
-                ORIG_TRANS_DT = '0001-01-01'
+            PO_APPROVAL_DATE_D = date_transformation(PO_APPROVAL_DATE_D)
+            PO_APPROVAL_DATE_R = date_transformation(PO_APPROVAL_DATE_R)
+            PO_APPROVAL_DATE_M = date_transformation(PO_APPROVAL_DATE_M)
+            PO_APPROVAL_DATE_F = date_transformation(PO_APPROVAL_DATE_F)
+            PO_MODIFIED_DATE_D = date_transformation(PO_MODIFIED_DATE_D)
+            PO_MODIFIED_DATE_R = date_transformation(PO_MODIFIED_DATE_R)
+            PO_MODIFIED_DATE_M = date_transformation(PO_MODIFIED_DATE_M)
+            PO_MODIFIED_DATE_F = date_transformation(PO_MODIFIED_DATE_F)
+            PO_CANCELLED_DATE_D = date_transformation(PO_CANCELLED_DATE_D)
+            PO_CANCELLED_DATE_R = date_transformation(PO_CANCELLED_DATE_R)
+            PO_CANCELLED_DATE_M = date_transformation(PO_CANCELLED_DATE_M)
+            PO_CANCELLED_DATE_F = date_transformation(PO_CANCELLED_DATE_F)
+            PO_ORDER_DATE = date_transformation(PO_ORDER_DATE)
+            PO_DELIVER_BY_DATE = date_transformation(PO_DELIVER_BY_DATE)
+            DELIVER_DATE_YYMMDD_KEY = date_transformation(DELIVER_DATE_YYMMDD_KEY)
+            FON_LAST_UPDATE_DATE = date_transformation(FON_LAST_UPDATE_DATE)
+            TRANSMITTED_DATE = date_transformation(TRANSMITTED_DATE)
+            PO_DISPOSAL_DATE = date_transformation(PO_DISPOSAL_DATE)
+            USE_CODE_MODIFY_DATE = date_transformation(USE_CODE_MODIFY_DATE)
+            PRIM_TARG_PROD_DTE = date_transformation(PRIM_TARG_PROD_DTE)
+
+            SEC_TARG_PROD_DTE = date_transformation(SEC_TARG_PROD_DTE)
+            ORIG_TRANS_DT = date_transformation(ORIG_TRANS_DT)
+
+
 
             purchase_order_data = (
             PURCHASE_ORDER_NUMBER, DIVISION_CODE_CR_D, PO_APPROVAL_IND_D, PO_APPROVAL_DATE_D, \
@@ -249,6 +241,7 @@ def read_file(input_file_path, connection_id_pg):
 
             # print ("##--"*25)
             # print ("------->{}".format(purchase_order_data))
+            print ("{}---->{}<--".format(count, PURCHASE_ORDER_NUMBER))
             insert_data(connection_id_pg, purchase_order_data)
             # input()
 
