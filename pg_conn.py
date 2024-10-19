@@ -1,5 +1,6 @@
 import configparser
 import psycopg2
+from database_query_exec import *
 
 def pg_conn(pg_connection_parameters):
     hostname = pg_connection_parameters['hostname'] 
@@ -38,4 +39,11 @@ def pg_conn_setup(db_conf_file):
 
     connection_id = pg_conn(pg_connection_parameters)
     return connection_id, pg_connection_parameters
+
+
+def setup_db_conn(db_conf_file):
+    connection_id_pg,  pg_connection_parameters = pg_conn_setup(db_conf_file)
+    # print (connection_id_pg)
+    create_table(connection_id_pg)
+    return connection_id_pg,  pg_connection_parameters
 
